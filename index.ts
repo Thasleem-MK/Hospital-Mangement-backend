@@ -4,6 +4,7 @@ import cors from "cors";
 import connectToDb from "./Config/dbConnection";
 import userRoutes from "./Routes/UserRoutes";
 import commenRoutes from "./Routes/CommenRoute";
+require("./Node-Cron/nodeCron");
 
 const app = express();
 
