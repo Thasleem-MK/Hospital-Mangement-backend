@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 const errorHandler = (
   error: any,
   req: Request,
-  res: Response,
+  res: any,
   next: NextFunction
 ) => {
   if (error.statusCode) {
@@ -28,4 +28,5 @@ const errorHandler = (
   }
   return res.status(500).json({ message: error });
 };
-module.exports = errorHandler;
+
+export default errorHandler;

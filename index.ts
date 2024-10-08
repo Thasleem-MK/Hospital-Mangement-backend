@@ -4,7 +4,9 @@ import cors from "cors";
 import connectToDb from "./Config/dbConnection";
 import userRoutes from "./Routes/UserRoutes";
 import commenRoutes from "./Routes/CommenRoute";
-require("./Node-Cron/nodeCron");
+import errorHandler from "./Middlewares/ErrorHandler";
+import cookieParser from "cookie-parser";
+// require("./Node-Cron/nodeCron");
 
 const app = express();
 
@@ -22,12 +24,15 @@ app.use(
 );
 
 app.use(express.json());
+app.use(cookieParser());
 
 // Fix route paths with leading '/'
 app.use("/api", userRoutes);
 app.use("/api", commenRoutes);
 
 connectToDb();
+
+app.use(errorHandler)
 
 app.listen(3000, () => {
   console.log("App is running");

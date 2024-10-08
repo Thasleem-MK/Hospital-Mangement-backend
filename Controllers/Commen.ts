@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import nodemailer from "nodemailer";
 import HttpError from "http-errors";
 
-export const sendMail = async (req: Request, res: Response) => {
+export const sendMail = async (req: Request, res: Response): Promise<Response> => {
   const { from, to, subject, text } = req.body;
 
   // Configure transporter
@@ -26,7 +26,7 @@ export const sendMail = async (req: Request, res: Response) => {
   const info = await transporter.sendMail(mailOptions);
 
   // Respond with a success message
-  res.status(200).json({
+  return res.status(200).json({
     message: "Email sent successfully!",
     info: info.response,
   });
