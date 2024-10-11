@@ -6,6 +6,7 @@ import userRoutes from "./Routes/UserRoutes";
 import commenRoutes from "./Routes/CommenRoute";
 import errorHandler from "./Middlewares/ErrorHandler";
 import cookieParser from "cookie-parser";
+import hospitalRoutes from "./Routes/HospitalRoute";
 // require("./Node-Cron/nodeCron");
 
 const app = express();
@@ -29,6 +30,7 @@ app.use(cookieParser());
 // Fix route paths with leading '/'
 app.use("/api", userRoutes);
 app.use("/api", commenRoutes);
+app.use("/api", hospitalRoutes);
 
 connectToDb();
 

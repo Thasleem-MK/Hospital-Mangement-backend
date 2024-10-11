@@ -130,3 +130,32 @@ export const userData = async (
     data: data,
   });
 };
+
+// User Logout
+export const userLogout = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  console.log("Logout");
+
+  return res.status(200).clearCookie("token").json({
+    status: "success",
+    message: "Logedout successfully",
+  });
+};
+
+// Reset Password
+export const resetPassword = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new HttpError.NotFound("User not found");
+  }
+  const hashedPassword = await bcrypt.hash(password, 10);
+  user.password = hashedPassword;
+  await user.save();
+  return res.status(200).json({ message: "Password reset successful." });
+};
