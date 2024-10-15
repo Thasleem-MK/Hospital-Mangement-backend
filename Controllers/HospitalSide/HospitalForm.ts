@@ -115,7 +115,7 @@ export const HospitalLogin = async (
   const token = Jwt.sign({ id: hospital._id }, jwtKey, {
     expiresIn: "1h",
   });
-  return res.status(200).cookie("token", token).json({
+  return res.status(200).cookie("token", token,{sameSite:"strict"}).json({
     status: "Success",
     message: "Hospital logged in successfully.",
   });
