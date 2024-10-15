@@ -118,9 +118,10 @@ export const HospitalLogin = async (
   return res
     .status(200)
     .cookie("token", token, {
-      sameSite: "strict",
-      maxAge: 1000 * 60 * 60 * 24,
       httpOnly: true,
+      sameSite:true,// "None" allows cross-site cookies, make sure you're using it with "secure"
+      path: "/", // Cookie available throughout the site
+      maxAge: 24 * 60 * 60 * 1000,
     })
     .json({
       status: "Success",
