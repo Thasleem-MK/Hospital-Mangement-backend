@@ -7,7 +7,7 @@ import commenRoutes from "./Routes/CommenRoute";
 import errorHandler from "./Middlewares/ErrorHandler";
 import cookieParser from "cookie-parser";
 import hospitalRoutes from "./Routes/HospitalRoute";
-// require("./Node-Cron/nodeCron");
+require("./Node-Cron/nodeCron");
 
 const app = express();
 
