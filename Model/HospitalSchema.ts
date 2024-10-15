@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 // Doctor Schema
 const doctorSchema = new Schema({
-  name: { type: String},
+  name: { type: String },
   consulting: [
     {
       day: { type: String },
@@ -14,7 +14,7 @@ const doctorSchema = new Schema({
 
 // Speciality Schema
 const specialtySchema = new Schema({
-  name: { type: String}, // 'Cardiology'
+  name: { type: String }, // 'Cardiology'
   description: { type: String },
   department_info: { type: String },
   doctors: [doctorSchema], // List of doctors under this specialty
@@ -30,8 +30,30 @@ const reviewSchema = new Schema({
 // Working Hours Schema
 const workingHoursSchema = new Schema({
   day: { type: String, required: true },
-  opening_time: { type: String, required: true }, 
-  closing_time: { type: String, required: true },
+  opening_time: {
+    type: String,
+    validate: {
+      validator: function (this: any) {
+        return (
+          this.is_holiday || (this.opening_time && this.opening_time.length > 0)
+        );
+      },
+      message: "Opening time is required unless it's a holiday.",
+    },
+  },
+  closing_time: {
+    type: String,
+    validate: {
+      validator: function (this: any) {
+        // If it's not a holiday, closing_time should be required
+        return (
+          this.is_holiday || (this.closing_time && this.closing_time.length > 0)
+        );
+      },
+      message: "Closing time is required unless it's a holiday.",
+    },
+  },
+  is_holiday: { type: Boolean, default: false },
 });
 
 // Booking Schema
@@ -51,6 +73,7 @@ const hospitalSchema = new Schema({
   password: { type: String, required: true },
   phone: { type: String, required: true },
   email: { type: String, required: true },
+  emergencyContact: { type: String },
   image: { type: String },
   latitude: { type: Number },
   longitude: { type: Number },

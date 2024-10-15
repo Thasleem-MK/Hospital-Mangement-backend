@@ -2,15 +2,18 @@ import { Request, Response } from "express";
 import nodemailer from "nodemailer";
 import HttpError from "http-errors";
 
-export const sendMail = async (req: Request, res: Response): Promise<Response> => {
+export const sendMail = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   const { from, to, subject, text } = req.body;
 
   // Configure transporter
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "hostahelthcare@gmail.com",
-      pass: "msnu kyqdkddtxmaf", // Be cautious storing credentials directly
+      user: "hostahealthcare@gmail.com",
+      pass: "rtwtujyzvbzgasvp", // Be cautious storing credentials directly
     },
   });
 

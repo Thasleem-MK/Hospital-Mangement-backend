@@ -1,59 +1,95 @@
 import { Request, Response } from "express";
 import createError from "http-errors";
 import bcrypt from "bcrypt";
-import Joi from "joi";
-import Jwt from "jsonwebtoken";
+import Jwt, { JwtPayload } from "jsonwebtoken";
 import Hospital from "../../Model/HospitalSchema";
+import { RegistrationSchema } from "./RegistrationJoiSchema";
 
-// Joi validation for initial hospital registration
-const RegistrationSchema = Joi.object({
-  name: Joi.string().required().messages({
-    "string.empty": "Hospital name is required",
-    "any.required": "Hospital name is required",
-  }),
-  phone: Joi.string().required().messages({
-    "string.empty": "Phone number is required",
-    "any.required": "Phone number is required",
-  }),
-  address: Joi.string().required().messages({
-    "string.empty": "Address is required",
-    "any.required": "Address is required",
-  }),
-  email: Joi.string().email().required().messages({
-    "string.empty": "Email is required",
-    "string.email": "Please provide a valid email address",
-    "any.required": "Email is required",
-  }),
-  password: Joi.string().min(6).required().messages({
-    "string.empty": "Password is required",
-    "string.min": "Password must be at least 6 characters long",
-    "any.required": "Password is required",
-  }),
-});
+// Hospital Registration
+interface WorkingHours {
+  Monday: { open: string; close: string; isHoliday: boolean };
+  Tuesday: { open: string; close: string; isHoliday: boolean };
+  Wednesday: { open: string; close: string; isHoliday: boolean };
+  Thursday: { open: string; close: string; isHoliday: boolean };
+  Friday: { open: string; close: string; isHoliday: boolean };
+  Saturday: { open: string; close: string; isHoliday: boolean };
+  Sunday: { open: string; close: string; isHoliday: boolean };
+}
 
+interface HospitalRequestBody {
+  name: string;
+  email: string;
+  mobile: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  password: string;
+  workingHours: WorkingHours;
+}
 export const HospitalRegistration = async (
-  req: Request,
+  req: Request<{}, {}, HospitalRequestBody>,
   res: Response
 ): Promise<Response> => {
-  const { email, password } = req.body;
+  const {
+    name,
+    email,
+    mobile,
+    address,
+    latitude,
+    longitude,
+    password,
+    workingHours,
+  } = req.body;
 
-  const { error } = await RegistrationSchema.validate(req.body);
+  // Validate the request body using Joi
+  const data = {
+    name,
+    email,
+    mobile,
+    address,
+    latitude,
+    longitude,
+    password,
+    workingHours,
+  };
+  const { error } = await RegistrationSchema.validate(data);
   if (error) {
-    throw new createError.BadRequest(error.details[0].message);
+    console.log(error);
+
+    throw new createError.BadRequest(error?.details[0].message);
   }
 
-  const existingHospital = await Hospital.findOne({ email: email });
+  // Check if the hospital already exists with the same email
+  const existingHospital = await Hospital.findOne({ email });
   if (existingHospital) {
-    throw new createError.Conflict("Email is already exist. Please login");
+    throw new createError.Conflict("Email already exists. Please login.");
   }
 
+  // Hash the password before saving it
   const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Prepare the hospital data
   const newHospital = new Hospital({
-    ...req.body,
+    name,
+    email,
+    phone: mobile,
+    address,
+    latitude,
+    longitude,
+
     password: hashedPassword,
+    working_hours: Object.entries(workingHours).map(([day, hours]) => ({
+      day,
+      opening_time: hours.isHoliday ? null : hours.open,
+      closing_time: hours.isHoliday ? null : hours.close,
+      is_holiday: hours.isHoliday,
+    })),
   });
 
+  // Save the hospital to the database
   await newHospital.save();
+
+  // Respond with a success message
   return res.status(201).json({ message: "Hospital registered successfully." });
 };
 
@@ -82,5 +118,95 @@ export const HospitalLogin = async (
   return res.status(200).cookie("token", token).json({
     status: "Success",
     message: "Hospital logged in successfully.",
+  });
+};
+
+// Reset pasword
+export const resetPassword = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { email, password } = req.body;
+  const hospital = await Hospital.findOne({ email: email });
+  if (!hospital) {
+    throw new createError.NotFound("No user found");
+  }
+  const hashedPassword = await bcrypt.hash(password, 10);
+  hospital.password = hashedPassword;
+  hospital.save();
+  return res.status(200).json({
+    message: "Password updated successfully",
+  });
+};
+
+// Get Hospital(DashBoard) Details
+export const getHospitalDetails = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const token = req.cookies.token;
+  if (!token) {
+    throw new createError.Unauthorized("Please login to access this route");
+  }
+  const jwtKey = process.env.JWT_SECRET;
+  if (!jwtKey) {
+    throw new Error("JWT_SECRET is not defined");
+  }
+
+  // Verify and decode token
+  const decoded = Jwt.verify(token, jwtKey) as JwtPayload;
+
+  // Now you can safely access `id`
+  const { id } = decoded;
+  const hospital = await Hospital.findById(id);
+
+  return res.status(200).json({
+    status: "Success",
+    data: hospital,
+  });
+};
+
+//Update hospital details
+export const updateHospitalDetails = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { id } = req.params;
+  const {
+    name,
+    email,
+    mobile,
+    address,
+    latitude,
+    longitude,
+    workingHours,
+    emergencyContact,
+    about,
+  } = req.body;
+  const token = req.cookies.token;
+  if (!token) {
+    throw new createError.Unauthorized("Please login!");
+  }
+  const hospital = await Hospital.findById(id);
+  if (!hospital) {
+    throw new createError.NotFound("Hospital not found. Wrong input");
+  }
+  // Update the hospital fields
+  hospital.name = name || hospital.name;
+  hospital.email = email || hospital.email;
+  hospital.phone = mobile || hospital.phone;
+  hospital.address = address || hospital.address;
+  hospital.latitude = latitude || hospital.latitude;
+  hospital.longitude = longitude || hospital.longitude;
+  hospital.working_hours = workingHours || hospital.working_hours;
+  hospital.emergencyContact = emergencyContact || hospital.emergencyContact;
+  hospital.about = about || hospital.about;
+
+  // Save the updated hospital data
+  await hospital.save();
+
+  return res.status(200).json({
+    status: "Success",
+    message: "Hospital details updated successfully",
   });
 };
