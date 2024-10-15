@@ -113,12 +113,15 @@ export const HospitalLogin = async (
   }
   // Generate JWT token
   const token = Jwt.sign({ id: hospital._id }, jwtKey, {
-    expiresIn: "1h",
+    expiresIn: "24h",
   });
-  return res.status(200).cookie("token", token,{sameSite:"strict"}).json({
-    status: "Success",
-    message: "Hospital logged in successfully.",
-  });
+  return res
+    .status(200)
+    .cookie("token", token, { sameSite: "strict", maxAge: 1000 * 60 * 60 * 24 })
+    .json({
+      status: "Success",
+      message: "Hospital logged in successfully.",
+    });
 };
 
 // Reset pasword
