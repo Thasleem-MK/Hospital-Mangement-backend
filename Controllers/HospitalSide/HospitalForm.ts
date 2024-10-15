@@ -117,7 +117,7 @@ export const HospitalLogin = async (
   });
   return res
     .status(200)
-    .cookie("token", token, { sameSite: "strict", maxAge: 1000 * 60 * 60 * 24 })
+    .cookie("token", token)
     .json({
       status: "Success",
       message: "Hospital logged in successfully.",
