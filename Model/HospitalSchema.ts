@@ -7,16 +7,18 @@ const doctorSchema = new Schema({
   consulting: [
     {
       day: { type: String },
-      time: { type: String },
+      start_time: { type: String },
+      end_time: { type: String },
     },
   ],
 });
 
 // Speciality Schema
 const specialtySchema = new Schema({
-  name: { type: String }, // 'Cardiology'
+  name: { type: String },
   description: { type: String },
   department_info: { type: String },
+  phone: { type: String },
   doctors: [doctorSchema], // List of doctors under this specialty
 });
 
@@ -74,7 +76,7 @@ const hospitalSchema = new Schema({
   phone: { type: String, required: true },
   email: { type: String, required: true },
   emergencyContact: { type: String },
-  image: { type: String },
+  image: { imageUrl: { type: String }, deleteHash: { type: String } },
   latitude: { type: Number },
   longitude: { type: Number },
   about: { type: String },

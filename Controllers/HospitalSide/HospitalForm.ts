@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import Jwt, { JwtPayload } from "jsonwebtoken";
 import Hospital from "../../Model/HospitalSchema";
 import { RegistrationSchema } from "./RegistrationJoiSchema";
+import { error } from "console";
 
 // Hospital Registration
 interface WorkingHours {
@@ -115,18 +116,17 @@ export const HospitalLogin = async (
   const token = Jwt.sign({ id: hospital._id }, jwtKey, {
     expiresIn: "24h",
   });
-  return res
-    .status(200)
-    .cookie("token", token, {
-      httpOnly: true,
-      sameSite:true,// "None" allows cross-site cookies, make sure you're using it with "secure"
-      path: "/", // Cookie available throughout the site
-      maxAge: 24 * 60 * 60 * 1000,
-    })
-    .json({
-      status: "Success",
-      message: "Hospital logged in successfully.",
-    });
+
+  res.cookie("token", token, {
+    httpOnly: true,
+    sameSite: true,
+    maxAge: 24 * 60 * 60 * 1000,
+  });
+  
+  return res.status(200).json({
+    status: "Success",
+    message: "Hospital logged in successfully.",
+  });
 };
 
 // Reset pasword
@@ -190,6 +190,7 @@ export const updateHospitalDetails = async (
     workingHours,
     emergencyContact,
     about,
+    image,
   } = req.body;
   const token = req.cookies.token;
   if (!token) {
@@ -209,6 +210,7 @@ export const updateHospitalDetails = async (
   hospital.working_hours = workingHours || hospital.working_hours;
   hospital.emergencyContact = emergencyContact || hospital.emergencyContact;
   hospital.about = about || hospital.about;
+  hospital.image = image || hospital.image;
 
   // Save the updated hospital data
   await hospital.save();
@@ -216,5 +218,123 @@ export const updateHospitalDetails = async (
   return res.status(200).json({
     status: "Success",
     message: "Hospital details updated successfully",
+  });
+};
+
+// Add a new specialty
+export const addSpecialty = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { department_info, description, doctors, name, phone } = req.body;
+  const { id } = req.params;
+  const token = req.cookies.token;
+  if (!token) {
+    throw new createError.Unauthorized("Unauthorized,Please login!");
+  }
+  const hospital = await Hospital.findById(id);
+  if (!hospital) {
+    throw new createError.NotFound("Hospital not found. Wrong input");
+  }
+  // Check the spectilty already exist
+  const isExist = hospital.specialties.find((element) => element.name === name);
+
+  if (isExist) {
+    throw new createError.Conflict("Specialty is already exist!");
+  }
+
+  hospital.specialties.push({
+    name: name,
+    description: description,
+    department_info: department_info,
+    phone: phone,
+    doctors: doctors,
+  });
+  await hospital.save();
+  return res.status(201).json({
+    status: "Success",
+    message: "Specialty added successfully",
+    data: hospital.specialties,
+  });
+};
+
+// Update Specialty
+export const updateSpecialty = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { department_info, description, doctors, name, phone } = req.body;
+  const { id } = req.params;
+  const token = req.cookies.token;
+  if (!token) {
+    throw new createError.Unauthorized("Unauthorized,Please login!");
+  }
+  const hospital = await Hospital.findById(id);
+  if (!hospital) {
+    throw new createError.NotFound("Hospital not found. Wrong input");
+  }
+  // Check the spectilty
+  const specialty = hospital.specialties.find(
+    (element) => element.name === name
+  );
+  if (!specialty) {
+    throw new createError.NotFound("Specialty not found.");
+  }
+
+  // Update the fields
+  if (department_info !== undefined) {
+    specialty.department_info = department_info;
+  }
+  if (description !== undefined) {
+    specialty.description = description;
+  }
+  if (phone !== undefined) {
+    specialty.phone = phone;
+  }
+  if (doctors !== undefined) {
+    specialty.doctors = doctors;
+  }
+  if (name !== undefined) {
+    specialty.name = name;
+  }
+  await hospital.save();
+
+  return res.status(201).json({
+    status: "Success",
+    message: "Specialty updated successfully",
+    data: hospital.specialties,
+  });
+};
+
+// Delete a specialty
+export const deleteSpecialty = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { name } = req.query;
+  const { id } = req.params;
+  const token = req.cookies.token;
+  if (!token) {
+    throw new createError.Unauthorized("Unauthorized,Please login!");
+  }
+  const hospital = await Hospital.findById(id);
+  if (!hospital) {
+    throw new createError.NotFound("Hospital not found. Wrong input");
+  }
+  // Check the spectilty
+  const index = hospital.specialties.findIndex(
+    (element) => element.name === name
+  );
+  if (index === -1) {
+    throw new createError.NotFound("Specialty not found.");
+  }
+  hospital.specialties.splice(index, 1);
+
+  await hospital.save();
+
+  return res.status(201).json({
+    status: "Success",
+    message: "Specialty deleted successfully",
+    data: hospital.specialties,
   });
 };
