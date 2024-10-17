@@ -76,7 +76,7 @@ const hospitalSchema = new Schema({
   phone: { type: String, required: true },
   email: { type: String, required: true },
   emergencyContact: { type: String },
-  image: { imageUrl: { type: String }, deleteHash: { type: String } },
+  image: { imageUrl: { type: String }, public_id: { type: String } },
   latitude: { type: Number },
   longitude: { type: Number },
   about: { type: String },

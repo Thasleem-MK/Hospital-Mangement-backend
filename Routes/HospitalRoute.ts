@@ -10,6 +10,7 @@ import {
   updateHospitalDetails,
   updateSpecialty,
 } from "../Controllers/HospitalSide/HospitalForm";
+import { uploadImage } from "../Middlewares/Multer";
 
 const hospitalRoutes = Express.Router();
 
@@ -21,5 +22,6 @@ hospitalRoutes.put("/hospital/details/:id", trycatch(updateHospitalDetails));
 hospitalRoutes.post("/hospital/specialty/:id", trycatch(addSpecialty));
 hospitalRoutes.put("/hospital/specialty/:id", trycatch(updateSpecialty));
 hospitalRoutes.delete("/hospital/specialty/:id", trycatch(deleteSpecialty));
+hospitalRoutes.post("/hospital/profileImage/:id", trycatch(uploadImage));
 
 export default hospitalRoutes;

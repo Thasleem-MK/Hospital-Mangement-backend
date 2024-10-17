@@ -1,5 +1,7 @@
-import express from "express";
 import dotenv from "dotenv";
+dotenv.config({ path: "./Config/.env" });
+
+import express from "express";
 import cors from "cors";
 import connectToDb from "./Config/dbConnection";
 import userRoutes from "./Routes/UserRoutes";
@@ -10,8 +12,6 @@ import hospitalRoutes from "./Routes/HospitalRoute";
 require("./Node-Cron/nodeCron");
 
 const app = express();
-
-dotenv.config({ path: "./Config/.env" });
 
 app.use(
   cors({
@@ -34,7 +34,7 @@ app.use("/api", hospitalRoutes);
 
 connectToDb();
 
-app.use(errorHandler)
+app.use(errorHandler);
 
 app.listen(3000, () => {
   console.log("App is running");
