@@ -117,12 +117,15 @@ export const HospitalLogin = async (
     expiresIn: "24h",
   });
 
+  const oneDayInMs = 24 * 60 * 60 * 1000;
+  const expirationDate = new Date(Date.now() + oneDayInMs);
   res.cookie("token", token, {
     httpOnly: true,
-    sameSite: true,
-    maxAge: 24 * 60 * 60 * 1000,
+    expires: expirationDate,
+    secure: true,
+    sameSite: "none",
   });
-  
+
   return res.status(200).json({
     status: "Success",
     message: "Hospital logged in successfully.",
