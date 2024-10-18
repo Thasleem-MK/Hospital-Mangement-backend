@@ -36,6 +36,6 @@ connectToDb();
 
 app.use(errorHandler);
 
-app.listen(3000, () => {
+app.listen(process.env.Port, () => {
   console.log("App is running");
 });
