@@ -36,7 +36,7 @@ export const uploadImage = async (
 ): Promise<Response> => {
   const { id } = req.params;
 
-  const file = await uploadFile(req, res); // Wait for multer to finish
+  const file = await uploadFile(req, res);
 
   const hospital = await Hospital.findById(id);
   if (!hospital) {
@@ -48,17 +48,15 @@ export const uploadImage = async (
     await cloudinary.uploader.destroy(hospital.image.public_id);
   }
 
-  // Upload the new file to Cloudinary
   if (file) {
     const normalizedPath = path.normalize(file.path);
     const result = await cloudinary.uploader.upload(normalizedPath);
 
-    // Update hospital's image details
     hospital.image = {
       imageUrl: result.secure_url,
       public_id: result.public_id,
     };
-    await hospital.save(); // Save the updated hospital
+    await hospital.save();
 
     return res.status(200).json({ imageUrl: result.secure_url });
   } else {

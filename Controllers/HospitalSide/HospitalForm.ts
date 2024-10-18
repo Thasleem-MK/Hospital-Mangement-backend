@@ -341,3 +341,95 @@ export const deleteSpecialty = async (
     data: hospital.specialties,
   });
 };
+
+// Add a doctor
+export const addDoctor = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { id } = req.params;
+  const { name, specialty, consulting } = req.body;
+  const data = { name, consulting };
+
+  const hospital = await Hospital.findById(id);
+  hospital?.specialties
+    .filter((Specialty) => {
+      return Specialty.name === specialty;
+    })[0]
+    .doctors.push(data);
+  await hospital?.save();
+  return res.status(201).json({
+    message: `Added new doctor in ${specialty}`,
+    data: hospital?.specialties,
+  });
+};
+
+// Update Doctor
+export const updateDoctor = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { id } = req.params;
+  const { _id, name, specialty, consulting } = req.body;
+  const data = { name, consulting };
+
+  const hospital = await Hospital.findById(id);
+
+  if (!hospital) {
+    return res.status(404).json({ message: "Hospital not found" });
+  }
+
+  const targetSpecialty = hospital.specialties.find(
+    (s) => s.name === specialty
+  );
+
+  if (!targetSpecialty) {
+    throw new createError.NotFound(`Specialty ${specialty} not found`);
+  }
+
+  const targetDoctor = targetSpecialty.doctors.find((d) => d._id == _id);
+
+  if (!targetDoctor) {
+    throw new createError.NotFound(
+      `Doctor with ID ${_id} not found in specialty ${specialty}`
+    );
+  }
+
+  targetDoctor.name = data.name;
+  targetDoctor.consulting = data.consulting;
+
+  await hospital.save();
+
+  return res.status(200).json({
+    message: `Doctor in ${specialty} updated successfully`,
+    data: hospital.specialties,
+  });
+};
+
+// Delete Doctor
+export const deleteDoctor = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { hospital_id, doctor_id } = req.params;
+  const { specialty_name } = req.query;
+  const hospital = await Hospital.findById(hospital_id);
+  if (!hospital) {
+    throw new createError.NotFound("Hospital not found!");
+  }
+  const targetSpecialty = hospital.specialties.find(
+    (s) => s.name === specialty_name
+  );
+  targetSpecialty?.doctors.forEach((doctor, index) => {
+    if (doctor._id.toString() == doctor_id) {
+      targetSpecialty.doctors.splice(index, 1);
+    }
+  });
+
+  await hospital.save();
+
+  return res.status(200).json({
+    message: `Doctor in ${specialty_name} deleted successfully`,
+    data: hospital.specialties,
+  });
+};

@@ -16,9 +16,9 @@ const app = express();
 app.use(
   cors({
     origin: [
-      "https://hospital-managements.vercel.app",
-      "https://hospital-management-hospital-side.vercel.app",
-      "http://localhost:5173",
+      process.env.UserSide_URL as string,
+      process.env.HospitalSide_URL as string,
+      process.env.LocalHost as string,
     ],
     credentials: true,
   })
