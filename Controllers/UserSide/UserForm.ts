@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import Jwt, { JwtPayload } from "jsonwebtoken";
 import User from "../../Model/UserSchema";
 import { ObjectId } from "mongodb";
+import Hospital from "../../Model/HospitalSchema";
 
 // Joi schema to validate the Registration data of users
 const joiSchema = Joi.object({
@@ -158,4 +159,32 @@ export const resetPassword = async (
   user.password = hashedPassword;
   await user.save();
   return res.status(200).json({ message: "Password reset successful." });
+};
+
+// Get details of all hospitals
+export const getHospitals = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const hospitals = await Hospital.find();
+  return res.status(200).json({ data: hospitals });
+};
+
+// Post a review
+export const postReview = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { user_id, rating, comment, date } = req.body;
+  const { id } = req.params;
+  const hospital = await Hospital.findById(id);
+  if (!hospital) {
+    throw new HttpError.NotFound("Hospital not found");
+  }
+  hospital?.reviews.push({ user_id, rating, comment, date });
+  await hospital?.save();
+  return res.status(200).json({
+    message: "Review posted successfully",
+    data: hospital,
+  });
 };

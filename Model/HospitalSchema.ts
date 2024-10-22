@@ -24,9 +24,10 @@ const specialtySchema = new Schema({
 
 // Review Schema
 const reviewSchema = new Schema({
-  user_name: { type: String, required: true }, // Name of the user who gave the review
+  user_id: { type: String, required: true }, // Name of the user who gave the review
   rating: { type: Number, required: true, min: 1, max: 5 }, // Rating between 1-5
   comment: { type: String },
+  date: { type: String },
 });
 
 // Working Hours Schema
@@ -63,9 +64,14 @@ const bookingSchema = new Schema({
   user_name: { type: String },
   mobile: { type: String },
   email: { type: String },
-  specialty: { type: String }, // Specialty name (optional if booking a specific doctor)
-  doctor_name: { type: String }, // Doctor's name (optional if only booking by specialty)
-  booking_date: { type: Date }, // Date of the booking
+  specialty: { type: String },
+  doctor_name: { type: String },
+  booking_date: { type: Date },
+  booking_time: { type: String },
+  status: {
+    type: String,
+    enum: ["pending", "accepted", "declained"],
+  },
 });
 
 // Hospital Schema
