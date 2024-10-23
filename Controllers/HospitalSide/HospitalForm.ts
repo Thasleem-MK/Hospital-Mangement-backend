@@ -4,7 +4,6 @@ import bcrypt from "bcrypt";
 import Jwt, { JwtPayload } from "jsonwebtoken";
 import Hospital from "../../Model/HospitalSchema";
 import { RegistrationSchema } from "./RegistrationJoiSchema";
-import { error } from "console";
 
 // Hospital Registration
 interface WorkingHours {
@@ -155,20 +154,7 @@ export const getHospitalDetails = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const token = req.cookies.token;
-  if (!token) {
-    throw new createError.Unauthorized("Please login to access this route");
-  }
-  const jwtKey = process.env.JWT_SECRET;
-  if (!jwtKey) {
-    throw new Error("JWT_SECRET is not defined");
-  }
-
-  // Verify and decode token
-  const decoded = Jwt.verify(token, jwtKey) as JwtPayload;
-
-  // Now you can safely access `id`
-  const { id } = decoded;
+  const { id } = req.params;
   const hospital = await Hospital.findById(id);
 
   return res.status(200).json({

@@ -9,15 +9,16 @@ import {
   userRegister,
 } from "../Controllers/UserSide/UserForm";
 import { trycatch } from "../Utils/TryCatch";
+import Auth from "../Middlewares/Authenticator";
 
 const userRoutes = express.Router();
 
 userRoutes.post("/users/registeration", trycatch(userRegister));
 userRoutes.post("/users/login", trycatch(userLogin));
-userRoutes.post("/users/password", trycatch(resetPassword));
+userRoutes.post("/users/password", Auth, trycatch(resetPassword));
 userRoutes.post("/users/logout", trycatch(userLogout));
-userRoutes.get("/users", trycatch(userData));
+userRoutes.get("/users", Auth, trycatch(userData));
 userRoutes.get("/hospitals", trycatch(getHospitals));
-userRoutes.post("/reviews/:id", trycatch(postReview));
+userRoutes.post("/reviews/:id", Auth, trycatch(postReview));
 
 export default userRoutes;
