@@ -207,10 +207,6 @@ export const updateHospitalDetails = async (
     about,
     image,
   } = req.body;
-  const token = req.cookies.token;
-  if (!token) {
-    throw new createError.Unauthorized("Please login!");
-  }
   const hospital = await Hospital.findById(id);
   if (!hospital) {
     throw new createError.NotFound("Hospital not found. Wrong input");
@@ -243,10 +239,6 @@ export const addSpecialty = async (
 ): Promise<Response> => {
   const { department_info, description, doctors, name, phone } = req.body;
   const { id } = req.params;
-  const token = req.cookies.token;
-  if (!token) {
-    throw new createError.Unauthorized("Unauthorized,Please login!");
-  }
   const hospital = await Hospital.findById(id);
   if (!hospital) {
     throw new createError.NotFound("Hospital not found. Wrong input");
@@ -280,10 +272,6 @@ export const updateSpecialty = async (
 ): Promise<Response> => {
   const { department_info, description, doctors, name, phone } = req.body;
   const { id } = req.params;
-  const token = req.cookies.token;
-  if (!token) {
-    throw new createError.Unauthorized("Unauthorized,Please login!");
-  }
   const hospital = await Hospital.findById(id);
   if (!hospital) {
     throw new createError.NotFound("Hospital not found. Wrong input");
@@ -328,10 +316,6 @@ export const deleteSpecialty = async (
 ): Promise<Response> => {
   const { name } = req.query;
   const { id } = req.params;
-  const token = req.cookies.token;
-  if (!token) {
-    throw new createError.Unauthorized("Unauthorized,Please login!");
-  }
   const hospital = await Hospital.findById(id);
   if (!hospital) {
     throw new createError.NotFound("Hospital not found. Wrong input");
