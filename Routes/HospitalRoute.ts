@@ -26,7 +26,7 @@ hospitalRoutes.post(
   trycatch(resetPassword)
 );
 hospitalRoutes.get(
-  "/hospital/details/:id",
+  "/hospital/details",
   Authenticator,
   trycatch(getHospitalDetails)
 );

@@ -19,13 +19,13 @@ const specialtySchema = new Schema({
   description: { type: String },
   department_info: { type: String },
   phone: { type: String },
-  doctors: [doctorSchema], // List of doctors under this specialty
+  doctors: [doctorSchema],
 });
 
 // Review Schema
 const reviewSchema = new Schema({
-  user_id: { type: String, required: true }, // Name of the user who gave the review
-  rating: { type: Number, required: true, min: 1, max: 5 }, // Rating between 1-5
+  user_id: { type: String, required: true },
+  rating: { type: Number, required: true, min: 1, max: 5 },
   comment: { type: String },
   date: { type: String },
 });
@@ -48,7 +48,6 @@ const workingHoursSchema = new Schema({
     type: String,
     validate: {
       validator: function (this: any) {
-        // If it's not a holiday, closing_time should be required
         return (
           this.is_holiday || (this.closing_time && this.closing_time.length > 0)
         );

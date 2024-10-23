@@ -111,14 +111,22 @@ export const HospitalLogin = async (
   if (!jwtKey) {
     throw new Error("JWT_SECRET is not defined");
   }
-  // Generate JWT token
-  const token = Jwt.sign({ id: hospital._id }, jwtKey, {
-    expiresIn: "24h",
+  // Generate JWT tokens
+  const token = Jwt.sign({ id: hospital._id, name: hospital.name }, jwtKey, {
+    expiresIn: "15m",
   });
 
-  const oneDayInMs = 24 * 60 * 60 * 1000;
+  const refreshToken = Jwt.sign(
+    { id: hospital._id, name: hospital.name },
+    jwtKey,
+    {
+      expiresIn: "7d",
+    }
+  );
+
+  const oneDayInMs = 7 * 24 * 60 * 60 * 1000;
   const expirationDate = new Date(Date.now() + oneDayInMs);
-  res.cookie("token", token, {
+  res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     expires: expirationDate,
     secure: true,
@@ -127,6 +135,8 @@ export const HospitalLogin = async (
 
   return res.status(200).json({
     status: "Success",
+    token: token,
+    data: hospital,
     message: "Hospital logged in successfully.",
   });
 };
@@ -150,12 +160,28 @@ export const resetPassword = async (
 };
 
 // Get Hospital(DashBoard) Details
+interface CustomJwtPayload extends JwtPayload {
+  id: string;
+  name: string;
+}
 export const getHospitalDetails = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const { id } = req.params;
-  const hospital = await Hospital.findById(id);
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) {
+    throw new createError.Unauthorized("No token provided. Please login.");
+  }
+
+  const decoded = Jwt.verify(
+    token,
+    process.env.JWT_SECRET as string
+  ) as CustomJwtPayload;
+  if (!decoded) {
+    throw new createError.Unauthorized("Invalid token. Please login.");
+  }
+
+  const hospital = await Hospital.findById(decoded.id);
 
   return res.status(200).json({
     status: "Success",
