@@ -60,7 +60,7 @@ export const Refresh = async (
     const newRefreshToken = jwt.sign(
       { id: decoded.id, name: decoded.name },
       process.env.JWT_SECRET as string,
-      { expiresIn: "24h" }
+      { expiresIn: "2d" }
     );
 
     const twoDayInMs = 2 * 24 * 60 * 60 * 1000;

@@ -7,6 +7,7 @@ import {
   deleteSpecialty,
   getHospitalDetails,
   HospitalLogin,
+  hospitalLogout,
   HospitalRegistration,
   resetPassword,
   updateDoctor,
@@ -65,6 +66,11 @@ hospitalRoutes.delete(
   "/hospital/doctor/:hospital_id/:doctor_id",
   Authenticator,
   trycatch(deleteDoctor)
+);
+hospitalRoutes.get(
+  "/hospital/logout",
+  Authenticator,
+  trycatch(hospitalLogout)
 );
 
 export default hospitalRoutes;

@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 // Doctor Schema
 const doctorSchema = new Schema({
   name: { type: String },
+  qualification: { type: String },
   consulting: [
     {
       day: { type: String },

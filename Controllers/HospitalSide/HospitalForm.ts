@@ -124,8 +124,8 @@ export const HospitalLogin = async (
     }
   );
 
-  const oneDayInMs = 7 * 24 * 60 * 60 * 1000;
-  const expirationDate = new Date(Date.now() + oneDayInMs);
+  const sevenDayInMs = 7 * 24 * 60 * 60 * 1000;
+  const expirationDate = new Date(Date.now() + sevenDayInMs);
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     expires: expirationDate,
@@ -428,4 +428,16 @@ export const deleteDoctor = async (
     message: `Doctor in ${specialty_name} deleted successfully`,
     data: hospital.specialties,
   });
+};
+
+// Hospital Logout
+export const hospitalLogout = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  if (req.cookies.refreshToken) {
+    res.clearCookie("refreshToken");
+  }
+
+  return res.status(200).send("Logged out successfully");
 };
