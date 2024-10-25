@@ -39,3 +39,5 @@ app.use(errorHandler);
 app.listen(process.env.Port, () => {
   console.log("App is running");
 });
+
+export default app;
