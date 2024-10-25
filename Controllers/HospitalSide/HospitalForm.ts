@@ -436,7 +436,13 @@ export const hospitalLogout = async (
   res: Response
 ): Promise<Response> => {
   if (req.cookies.refreshToken) {
-    res.clearCookie("refreshToken");
+    const expirationDate = new Date(0);
+    res.cookie("refreshToken", "", {
+      httpOnly: true,
+      expires: expirationDate,
+      secure: true,
+      sameSite: "none",
+    });
   }
 
   return res.status(200).send("Logged out successfully");

@@ -57,21 +57,21 @@ export const Refresh = async (
       process.env.JWT_SECRET as string,
       { expiresIn: "24h" }
     );
-    // const newRefreshToken = jwt.sign(
-    //   { id: decoded.id, name: decoded.name },
-    //   process.env.JWT_SECRET as string,
-    //   { expiresIn: "2d" }
-    // );
+    const newRefreshToken = jwt.sign(
+      { id: decoded.id, name: decoded.name },
+      process.env.JWT_SECRET as string,
+      { expiresIn: "2d" }
+    );
 
-    // const twoDayInMs = 2 * 24 * 60 * 60 * 1000;
-    // const expirationDate = new Date(Date.now() + twoDayInMs);
+    const twoDayInMs = 2 * 24 * 60 * 60 * 1000;
+    const expirationDate = new Date(Date.now() + twoDayInMs);
 
-    // res.cookie("refreshToken", newRefreshToken, {
-    //   httpOnly: true,
-    //   expires: expirationDate,
-    //   secure: true,
-    //   sameSite: "none",
-    // });
+    res.cookie("refreshToken", newRefreshToken, {
+      httpOnly: true,
+      expires: expirationDate,
+      secure: true,
+      sameSite: "none",
+    });
 
     return res.json({
       message: "Access token refreshed successfully",
