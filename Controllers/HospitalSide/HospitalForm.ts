@@ -239,25 +239,33 @@ export const addSpecialty = async (
 ): Promise<Response> => {
   const { department_info, description, doctors, name, phone } = req.body;
   const { id } = req.params;
+
   const hospital = await Hospital.findById(id);
   if (!hospital) {
     throw new createError.NotFound("Hospital not found. Wrong input");
   }
+
   // Check the spectilty already exist
-  const isExist = hospital.specialties.find((element) => element.name === name);
+  const isExist = hospital.specialties.find(
+    (element) =>
+      element.name?.trim().toLowerCase() ===
+      name.toString().trim().toLowerCase()
+  );
 
   if (isExist) {
     throw new createError.Conflict("Specialty is already exist!");
   }
 
   hospital.specialties.push({
-    name: name,
-    description: description,
-    department_info: department_info,
-    phone: phone,
+    name: name as string,
+    department_info: department_info as string,
+    description: description as string,
+    phone: phone as string,
     doctors: doctors,
   });
+
   await hospital.save();
+
   return res.status(201).json({
     status: "Success",
     message: "Specialty added successfully",
