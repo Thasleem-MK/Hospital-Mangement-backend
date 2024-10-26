@@ -267,7 +267,7 @@ export const addSpecialty = async (
   await hospital.save();
 
   return res.status(201).json({
-    status: "Success",
+    status: "Successsss",
     message: "Specialty added successfully",
     data: hospital.specialties,
   });
