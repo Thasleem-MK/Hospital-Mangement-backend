@@ -314,15 +314,18 @@ export const deleteSpecialty = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const { name } = req.query;
+  const { name } = req.query as { name: string };
   const { id } = req.params;
+
   const hospital = await Hospital.findById(id);
   if (!hospital) {
     throw new createError.NotFound("Hospital not found. Wrong input");
   }
+
   // Check the spectilty
   const index = hospital.specialties.findIndex(
-    (element) => element.name === name
+    (element) =>
+      element.name?.trim().toLowerCase() === name.trim().toLowerCase()
   );
   if (index === -1) {
     throw new createError.NotFound("Specialty not found.");
@@ -344,8 +347,8 @@ export const addDoctor = async (
   res: Response
 ): Promise<Response> => {
   const { id } = req.params;
-  const { name, specialty, consulting } = req.body;
-  const data = { name, consulting };
+  const { name, specialty, consulting, qualification } = req.body;
+  const data = { name, consulting, qualification };
 
   const hospital = await Hospital.findById(id);
   hospital?.specialties
@@ -366,8 +369,8 @@ export const updateDoctor = async (
   res: Response
 ): Promise<Response> => {
   const { id } = req.params;
-  const { _id, name, specialty, consulting } = req.body;
-  const data = { name, consulting };
+  const { _id, name, specialty, consulting, qualification } = req.body;
+  const data = { name, consulting, qualification };
 
   const hospital = await Hospital.findById(id);
 
@@ -408,14 +411,17 @@ export const deleteDoctor = async (
   res: Response
 ): Promise<Response> => {
   const { hospital_id, doctor_id } = req.params;
-  const { specialty_name } = req.query;
+  const { specialty_name } = req.query as { specialty_name: string };
+
   const hospital = await Hospital.findById(hospital_id);
   if (!hospital) {
     throw new createError.NotFound("Hospital not found!");
   }
+
   const targetSpecialty = hospital.specialties.find(
-    (s) => s.name === specialty_name
+    (s) => s.name?.trim().toLowerCase() === specialty_name.trim().toLowerCase()
   );
+
   targetSpecialty?.doctors.forEach((doctor, index) => {
     if (doctor._id.toString() == doctor_id) {
       targetSpecialty.doctors.splice(index, 1);
