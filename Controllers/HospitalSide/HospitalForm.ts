@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import Jwt, { JwtPayload } from "jsonwebtoken";
 import Hospital from "../../Model/HospitalSchema";
 import { RegistrationSchema } from "./RegistrationJoiSchema";
+import { v2 as cloudinary } from "cloudinary";
 
 // Hospital Registration
 interface WorkingHours {
@@ -206,11 +207,18 @@ export const updateHospitalDetails = async (
     emergencyContact,
     about,
     image,
+    currentPassword,
+    newPassword,
   } = req.body;
   const hospital = await Hospital.findById(id);
   if (!hospital) {
     throw new createError.NotFound("Hospital not found. Wrong input");
   }
+  await bcrypt.compare(currentPassword, hospital.password).catch(() => {
+    throw new createError.BadRequest("Current password is wrong");
+  });
+  const Password = await bcrypt.hash(newPassword, 10);
+
   // Update the hospital fields
   hospital.name = name || hospital.name;
   hospital.email = email || hospital.email;
@@ -222,6 +230,7 @@ export const updateHospitalDetails = async (
   hospital.emergencyContact = emergencyContact || hospital.emergencyContact;
   hospital.about = about || hospital.about;
   hospital.image = image || hospital.image;
+  hospital.password = Password || hospital.password;
 
   // Save the updated hospital data
   await hospital.save();
@@ -460,4 +469,30 @@ export const hospitalLogout = async (
   }
 
   return res.status(200).send("Logged out successfully");
+};
+
+export const hospitalDelete = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { id } = req.params as { id: string };
+
+  if (req.cookies.refreshToken) {
+    const expirationDate = new Date(0);
+    res.cookie("refreshToken", "", {
+      httpOnly: true,
+      expires: expirationDate,
+      secure: true,
+      sameSite: "none",
+    });
+  }
+  const hospital = await Hospital.findById(id);
+  if (!hospital) {
+    throw new createError.NotFound("Hospital not found!");
+  }
+  if (hospital.image?.public_id) {
+    await cloudinary.uploader.destroy(hospital.image.public_id);
+  }
+  await Hospital.deleteOne({ _id: id });
+  return res.status(200).send("Your account deleted successfully");
 };
