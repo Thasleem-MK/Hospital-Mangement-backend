@@ -1,4 +1,4 @@
 node_modules
-.env
+Config/.env
 package-lock.json
 dist
