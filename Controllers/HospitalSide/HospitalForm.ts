@@ -206,11 +206,18 @@ export const updateHospitalDetails = async (
     emergencyContact,
     about,
     image,
+    currentPassword,
+    newPassword,
   } = req.body;
   const hospital = await Hospital.findById(id);
   if (!hospital) {
     throw new createError.NotFound("Hospital not found. Wrong input");
   }
+  await bcrypt.compare(currentPassword, hospital.password).catch(() => {
+    throw new createError.BadRequest("Current password is wrong");
+  });
+  const Password = await bcrypt.hash(newPassword, 10);
+
   // Update the hospital fields
   hospital.name = name || hospital.name;
   hospital.email = email || hospital.email;
@@ -222,6 +229,7 @@ export const updateHospitalDetails = async (
   hospital.emergencyContact = emergencyContact || hospital.emergencyContact;
   hospital.about = about || hospital.about;
   hospital.image = image || hospital.image;
+  hospital.password = Password || hospital.password;
 
   // Save the updated hospital data
   await hospital.save();
