@@ -219,9 +219,12 @@ export const updateHospitalDetails = async (
       throw new createError.BadRequest("Current password is wrong");
     });
   }
-  const Password = await bcrypt.hash(newPassword, 10);
 
   // Update the hospital fields
+  if (newPassword) {
+    const Password = await bcrypt.hash(newPassword, 10);
+    hospital.password = Password;
+  }
   hospital.name = name || hospital.name;
   hospital.email = email || hospital.email;
   hospital.phone = mobile || hospital.phone;
@@ -232,7 +235,6 @@ export const updateHospitalDetails = async (
   hospital.emergencyContact = emergencyContact || hospital.emergencyContact;
   hospital.about = about || hospital.about;
   hospital.image = image || hospital.image;
-  hospital.password = Password || hospital.password;
 
   // Save the updated hospital data
   await hospital.save();
