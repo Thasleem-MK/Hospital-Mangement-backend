@@ -19,6 +19,7 @@ interface WorkingHours {
 
 interface HospitalRequestBody {
   name: string;
+  type: string;
   email: string;
   mobile: string;
   address: string;
@@ -33,6 +34,7 @@ export const HospitalRegistration = async (
 ): Promise<Response> => {
   const {
     name,
+    type,
     email,
     mobile,
     address,
@@ -72,6 +74,7 @@ export const HospitalRegistration = async (
   // Prepare the hospital data
   const newHospital = new Hospital({
     name,
+    type,
     email,
     phone: mobile,
     address,

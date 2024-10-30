@@ -77,6 +77,7 @@ const bookingSchema = new Schema({
 // Hospital Schema
 const hospitalSchema = new Schema({
   name: { type: String, required: true },
+  type: { type: String, required: true }, // Homeo, Alopathy
   address: { type: String, required: true },
   password: { type: String, required: true },
   phone: { type: String, required: true },
