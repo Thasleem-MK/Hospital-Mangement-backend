@@ -214,9 +214,11 @@ export const updateHospitalDetails = async (
   if (!hospital) {
     throw new createError.NotFound("Hospital not found. Wrong input");
   }
-  await bcrypt.compare(currentPassword, hospital.password).catch(() => {
-    throw new createError.BadRequest("Current password is wrong");
-  });
+  if (currentPassword) {
+    await bcrypt.compare(currentPassword, hospital.password).catch(() => {
+      throw new createError.BadRequest("Current password is wrong");
+    });
+  }
   const Password = await bcrypt.hash(newPassword, 10);
 
   // Update the hospital fields
