@@ -5,23 +5,25 @@ const ambulanceSchema = new Schema({
     type: String,
     required: true,
   },
-  Address: {
+  address: {
     type: String,
     required: true,
   },
   latitude: {
     type: String,
   },
-  Longitude: {
+  longitude: {
     type: String,
   },
-  Phone: {
+  phone: {
     type: String,
     required: true,
+    unique: true,
   },
   email: {
     type: String,
     required: true,
+    unique: true,
   },
   password: {
     type: String,

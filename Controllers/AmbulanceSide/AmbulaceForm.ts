@@ -25,12 +25,12 @@ export const Registeration = async (
   }
   const newAmbulace = new Ambulance({
     serviceName: serviceName,
-    Address: address,
+    address: address,
     email: email,
     latitude: latitude,
-    Longitude: longitude,
+    longitude: longitude,
     password: hashedPassword,
-    Phone: phone,
+    phone: phone,
     vehicleType: vehicleType,
   });
   await newAmbulace.save();
@@ -69,6 +69,7 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
 
   const sevenDayInMs = 7 * 24 * 60 * 60 * 1000;
   const expirationDate = new Date(Date.now() + sevenDayInMs);
+
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     expires: expirationDate,
@@ -78,6 +79,28 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
   return res.status(200).json({
     message: "Loggedin successfully",
     token: token,
+    data: user,
+  });
+};
+
+// Get a specific ambulance details
+export const getanAmbulace = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const token = req.cookies.refreshToken;
+  if (!token) {
+    throw new createError.NotFound("User not found!");
+  }
+  const { id } = Jwt.verify(token, process.env.JWT_SECRET as string) as {
+    id: string;
+  };
+  const user = await Ambulance.findOne({ _id: id });
+  if (!user) {
+    throw new createError.NotFound("User not found!");
+  }
+  return res.status(200).json({
+    status: "Success",
     data: user,
   });
 };
