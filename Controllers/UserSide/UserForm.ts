@@ -166,6 +166,8 @@ export const getHospitals = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
+  console.log("Sammpole");
+  
   const hospitals = await Hospital.find();
   return res.status(200).json({ data: hospitals });
 };

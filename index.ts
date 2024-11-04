@@ -9,6 +9,7 @@ import commenRoutes from "./Routes/CommenRoute";
 import errorHandler from "./Middlewares/ErrorHandler";
 import cookieParser from "cookie-parser";
 import hospitalRoutes from "./Routes/HospitalRoute";
+import AmbulanceRoutes from "./Routes/AmbulanceRoutes";
 
 const app = express();
 
@@ -17,7 +18,7 @@ app.use(
     origin: [
       process.env.UserSide_URL as string,
       process.env.HospitalSide_URL as string,
-      process.env.LocalHost as string,
+      process.env.AmbulanceSide_URL as string,
     ],
     credentials: true,
   })
@@ -30,6 +31,7 @@ app.use(cookieParser());
 app.use("/api", userRoutes);
 app.use("/api", commenRoutes);
 app.use("/api", hospitalRoutes);
+app.use("/api", AmbulanceRoutes);
 
 connectToDb();
 
