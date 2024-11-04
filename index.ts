@@ -17,8 +17,8 @@ app.use(
   cors({
     origin: [
       process.env.UserSide_URL as string,
-      process.env.HospitalSide_URL as string,
       process.env.AmbulanceSide_URL as string,
+      process.env.HospitalSide_URL as string,
     ],
     credentials: true,
   })
