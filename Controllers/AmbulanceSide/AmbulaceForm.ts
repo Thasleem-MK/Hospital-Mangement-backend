@@ -111,14 +111,8 @@ export const updateData = async (
   res: Response
 ): Promise<Response> => {
   const { id } = req.params;
-  const {
-    serviceName,
-    address,
-    latitude,
-    longitude,
-    phone,
-    vehicleType,
-  } = req.body;
+  const { serviceName, address, latitude, longitude, phone, vehicleType } =
+    req.body;
   const user = await Ambulance.findById(id);
   if (!user) {
     throw new createError.NotFound("User not found!");
@@ -159,4 +153,19 @@ export const ambulanceDelete = async (
   }
   await Ambulance.deleteOne({ _id: id });
   return res.status(200).send("Your account deleted successfully");
+};
+
+// Get all ambulances
+export const getAmbulaces = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const ambulances = await Ambulance.find();
+  if (ambulances.length === 0) {
+    throw new createError.NotFound("No Data Found!");
+  }
+  return res.status(200).json({
+    status: "Success",
+    data: ambulances,
+  });
 };
