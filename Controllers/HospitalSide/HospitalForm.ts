@@ -461,22 +461,22 @@ export const deleteDoctor = async (
 };
 
 // Hospital Logout
-export const hospitalLogout = async (
-  req: Request,
-  res: Response
-): Promise<Response> => {
-  if (req.cookies.refreshToken) {
-    const expirationDate = new Date(0);
-    res.cookie("refreshToken", "", {
-      httpOnly: true,
-      expires: expirationDate,
-      secure: true,
-      sameSite: "none",
-    });
-  }
+// export const hospitalLogout = async (
+//   req: Request,
+//   res: Response
+// ): Promise<Response> => {
+//   if (req.cookies.refreshToken) {
+//     const expirationDate = new Date(0);
+//     res.cookie("refreshToken", "", {
+//       httpOnly: true,
+//       expires: expirationDate,
+//       secure: true,
+//       sameSite: "none",
+//     });
+//   }
 
-  return res.status(200).send("Logged out successfully");
-};
+//   return res.status(200).send("Logged out successfully");
+// };
 
 export const hospitalDelete = async (
   req: Request,

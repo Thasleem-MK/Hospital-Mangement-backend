@@ -104,3 +104,35 @@ export const getanAmbulace = async (
     data: user,
   });
 };
+
+//Update Ambulance Data
+export const updateData = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { id } = req.params;
+  const {
+    serviceName,
+    address,
+    latitude,
+    longitude,
+    phone,
+    vehicleType,
+  } = req.body;
+  const user = await Ambulance.findById(id);
+  if (!user) {
+    throw new createError.NotFound("User not found!");
+  }
+  user.serviceName = serviceName || user.serviceName;
+  user.address = address || user.address;
+  user.latitude = latitude || user.latitude;
+  user.longitude = longitude || user.longitude;
+  user.phone = phone || user.phone;
+  user.vehicleType = vehicleType || user.vehicleType;
+
+  await user.save();
+  return res.status(200).json({
+    message: "Updated data successfully",
+    data: user,
+  });
+};
