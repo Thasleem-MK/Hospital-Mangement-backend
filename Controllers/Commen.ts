@@ -81,3 +81,21 @@ export const Refresh = async (
     return res.status(403).json({ message: "Invalid refresh token" });
   }
 };
+
+// Logout
+export const Logout = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  if (req.cookies.refreshToken) {
+    const expirationDate = new Date(0);
+    res.cookie("refreshToken", "", {
+      httpOnly: true,
+      expires: expirationDate,
+      secure: true,
+      sameSite: "none",
+    });
+  }
+
+  return res.status(200).send("Logged out successfully");
+};
