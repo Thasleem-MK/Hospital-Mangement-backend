@@ -136,3 +136,27 @@ export const updateData = async (
     data: user,
   });
 };
+
+// Delete Ambulance
+export const ambulanceDelete = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { id } = req.params as { id: string };
+
+  if (req.cookies.refreshToken) {
+    const expirationDate = new Date(0);
+    res.cookie("refreshToken", "", {
+      httpOnly: true,
+      expires: expirationDate,
+      secure: true,
+      sameSite: "none",
+    });
+  }
+  const hospital = await Ambulance.findById(id);
+  if (!hospital) {
+    throw new createError.NotFound("Hospital not found!");
+  }
+  await Ambulance.deleteOne({ _id: id });
+  return res.status(200).send("Your account deleted successfully");
+};

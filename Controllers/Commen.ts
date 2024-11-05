@@ -88,6 +88,7 @@ export const Logout = async (
   res: Response
 ): Promise<Response> => {
   if (req.cookies.refreshToken) {
+    console.log(req.cookies.refreshToken);
     const expirationDate = new Date(0);
     res.cookie("refreshToken", "", {
       httpOnly: true,
