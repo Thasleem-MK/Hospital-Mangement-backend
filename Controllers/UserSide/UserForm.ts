@@ -94,18 +94,29 @@ export const userLogin = async (
     throw new Error("JWT_SECRET is not defined");
   }
 
-  const generateToken = Jwt.sign(
-    { id: user._id, email: user.email },
-    jwtSecret,
-    { expiresIn: "10h" }
-  );
-  return res
-    .status(200)
-    .cookie("token", generateToken, { maxAge: 36000000 })
-    .json({
-      status: "success",
-      data: user,
-    });
+  const token = Jwt.sign({ id: user._id, name: user.name }, jwtSecret, {
+    expiresIn: "15m",
+  });
+
+  const refreshToken = Jwt.sign({ id: user._id, name: user.name }, jwtSecret, {
+    expiresIn: "7d",
+  });
+
+  const sevenDayInMs = 7 * 24 * 60 * 60 * 1000;
+  const expirationDate = new Date(Date.now() + sevenDayInMs);
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    expires: expirationDate,
+    secure: true,
+    sameSite: "none",
+  });
+
+  return res.status(200).json({
+    status: "Success",
+    token: token,
+    data: user,
+    message: "You logged in successfully.",
+  });
 };
 
 // Get user data
@@ -113,9 +124,9 @@ export const userData = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const token = req.cookies.token;
+  const token = req.cookies.refreshToken;
   if (!token) {
-    throw new HttpError.Unauthorized("You are not logged in");
+    throw new HttpError.Unauthorized("Please login!");
   }
   const jwtSecret = process.env.JWT_SECRET;
 
@@ -132,18 +143,6 @@ export const userData = async (
   });
 };
 
-// User Logout
-export const userLogout = async (
-  req: Request,
-  res: Response
-): Promise<Response> => {
-  console.log("Logout");
-
-  return res.status(200).clearCookie("token").json({
-    status: "success",
-    message: "Logedout successfully",
-  });
-};
 
 // Reset Password
 export const resetPassword = async (

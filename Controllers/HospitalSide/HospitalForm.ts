@@ -57,8 +57,6 @@ export const HospitalRegistration = async (
   };
   const { error } = await RegistrationSchema.validate(data);
   if (error) {
-    console.log(error);
-
     throw new createError.BadRequest(error?.details[0].message);
   }
 
