@@ -143,7 +143,6 @@ export const userData = async (
   });
 };
 
-
 // Reset Password
 export const resetPassword = async (
   req: Request,
@@ -165,7 +164,10 @@ export const getHospitals = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const hospitals = await Hospital.find();
+  const hospitals = await Hospital.find().populate({
+    path: "reviews.user_id",
+    select: "name email",
+  });
   return res.status(200).json({ data: hospitals });
 };
 

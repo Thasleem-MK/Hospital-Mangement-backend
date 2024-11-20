@@ -8,6 +8,7 @@ export const sendMail = async (
   res: Response
 ): Promise<Response> => {
   const { from, to, subject, text } = req.body;
+  console.log(from,to)
 
   // Configure transporter
   const transporter = nodemailer.createTransport({
