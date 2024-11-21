@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  deleteReview,
   editReview,
   getHospitals,
   postReview,
@@ -20,5 +21,10 @@ userRoutes.get("/users", Auth, trycatch(userData));
 userRoutes.get("/hospitals", trycatch(getHospitals));
 userRoutes.post("/reviews/:id", Auth, trycatch(postReview));
 userRoutes.put("/reviews/:hospital_id/:reviewId", Auth, trycatch(editReview));
+userRoutes.delete(
+  "/reviews/:hospital_id/:reviewId",
+  Auth,
+  trycatch(deleteReview)
+);
 
 export default userRoutes;
