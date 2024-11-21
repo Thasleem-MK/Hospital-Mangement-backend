@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  editReview,
   getHospitals,
   postReview,
   resetPassword,
@@ -18,5 +19,6 @@ userRoutes.post("/users/password", Auth, trycatch(resetPassword));
 userRoutes.get("/users", Auth, trycatch(userData));
 userRoutes.get("/hospitals", trycatch(getHospitals));
 userRoutes.post("/reviews/:id", Auth, trycatch(postReview));
+userRoutes.put("/reviews/:hospital_id/:reviewId", Auth, trycatch(editReview));
 
 export default userRoutes;
