@@ -178,14 +178,22 @@ export const postReview = async (
 ): Promise<Response> => {
   const { user_id, rating, comment, date } = req.body;
   const { id } = req.params;
+
   const hospital = await Hospital.findById(id);
   if (!hospital) {
     throw new HttpError.NotFound("Hospital not found");
   }
-  hospital?.reviews.push({ user_id, rating, comment, date });
-  await hospital?.save();
+
+  hospital.reviews.push({ user_id, rating, comment, date });
+
+  await hospital.save();
+  const updatedHospital = await hospital.populate({
+    path: "reviews.user_id",
+    select: "name email",
+  });
+
   return res.status(200).json({
     message: "Review posted successfully",
-    data: hospital.populate({ path: "reviews.user_id", select: "name email" }),
+    data: updatedHospital,
   });
 };
