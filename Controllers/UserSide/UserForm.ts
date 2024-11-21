@@ -186,6 +186,6 @@ export const postReview = async (
   await hospital?.save();
   return res.status(200).json({
     message: "Review posted successfully",
-    data: hospital,
+    data: hospital.populate({ path: "reviews.user_id", select: "name email" }),
   });
 };
