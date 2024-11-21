@@ -229,3 +229,33 @@ export const editReview = async (
     data: updatedHospital,
   });
 };
+
+export const deleteReview = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { hospital_id, reviewId } = req.params;
+  const hospital = await Hospital.findById(hospital_id);
+  if (!hospital) {
+    throw new HttpError.NotFound("Hospital not found");
+  }
+  const index = hospital.reviews.findIndex(
+    (element) => element._id.toString() === reviewId
+  );
+  if (index === -1) {
+    throw new HttpError.NotFound("Review not found");
+  }
+
+  hospital.reviews.splice(index, 1);
+
+  await hospital.save();
+
+  const updatedHospital = await hospital.populate({
+    path: "reviews.user_id",
+    select: "name email",
+  });
+  return res.status(200).json({
+    message: "Review deleted successfully",
+    data: updatedHospital,
+  });
+};
