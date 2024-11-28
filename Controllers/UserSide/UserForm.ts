@@ -164,6 +164,8 @@ export const getHospitals = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
+  console.log("Sample from native");
+  
   const hospitals = await Hospital.find().populate({
     path: "reviews.user_id",
     select: "name email",
