@@ -13,16 +13,16 @@ import AmbulanceRoutes from "./Routes/AmbulanceRoutes";
 
 const app = express();
 
-// app.use(
-//   cors({
-//     origin: [
-//       process.env.UserSide_URL as string,
-//       process.env.AmbulanceSide_URL as string,
-//       process.env.HospitalSide_URL as string,
-//     ],
-//     credentials: true,
-//   })
-// );
+app.use(
+  cors({
+    origin: [
+      process.env.UserSide_URL as string,
+      process.env.AmbulanceSide_URL as string,
+      process.env.HospitalSide_URL as string,
+    ],
+    credentials: true,
+  })
+);
 
 // app.use(
 //   cors({
@@ -43,12 +43,12 @@ const app = express();
 //   })
 // );
 
-app.use(
-  cors({
-    origin: "*", // Allow all origins
-    credentials: true, // Allow credentials
-  })
-);
+// app.use(
+//   cors({
+//     origin: "*", // Allow all origins
+//     credentials: true, // Allow credentials
+//   })
+// );
 
 
 
