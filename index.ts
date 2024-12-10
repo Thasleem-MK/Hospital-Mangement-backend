@@ -24,34 +24,6 @@ app.use(
   })
 );
 
-// app.use(
-//   cors({
-//     origin: (origin, callback) => {
-//       // Check if the origin is in the allowed list
-//       const allowedOrigins = [
-//         process.env.UserSide_URL,
-//         process.env.AmbulanceSide_URL,
-//         process.env.HospitalSide_URL,
-//       ];
-//       if (!origin || allowedOrigins.includes(origin)) {
-//         callback(null, true);
-//       } else {
-//         callback(new Error("Not allowed by CORS"));
-//       }
-//     },
-//     credentials: true,
-//   })
-// );
-
-// app.use(
-//   cors({
-//     origin: "*", // Allow all origins
-//     credentials: true, // Allow credentials
-//   })
-// );
-
-
-
 app.use(express.json());
 app.use(cookieParser());
 
